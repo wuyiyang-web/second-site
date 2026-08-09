@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#670b12">
+  <title>新春纳福 · 岁岁常欢愉</title>
+  <style>
+    :root {
+      --red-deep: #260306;
+      --red: #8d1018;
+      --red-bright: #cc2932;
+      --gold: #f7d58a;
+      --gold-soft: #dba64b;
+      --ivory: #fff6de;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      background: var(--red-deep);
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--ivory);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 50% 34%, rgba(206, 54, 54, .32), transparent 27%),
+        radial-gradient(circle at 13% 16%, rgba(245, 197, 101, .10), transparent 19%),
+        linear-gradient(145deg, #230205 0%, #6e0910 52%, #2c0306 100%);
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: .78;
+    }
+
+    .grain,
+    .pattern {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .grain {
+      opacity: .13;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+
+    .pattern {
+      opacity: .13;
+      background-image:
+        linear-gradient(30deg, transparent 48%, rgba(247,213,138,.45) 49%, transparent 51%),
+        linear-gradient(-30deg, transparent 48%, rgba(247,213,138,.45) 49%, transparent 51%);
+      background-size: 62px 108px;
+      mask-image: linear-gradient(to bottom, #000, transparent 48%);
+    }
+
+    .frame {
+      position: fixed;
+      inset: 18px;
+      border: 1px solid rgba(247,213,138,.38);
+      pointer-events: none;
+    }
+
+    .frame::before,
+    .frame::after {
+      content: "";
+      position: absolute;
+      width: 54px;
+      height: 54px;
+      border-color: var(--gold);
+      opacity: .75;
+    }
+
+    .frame::before { left: 8px; top: 8px; border-left: 2px solid; border-top: 2px solid; }
+    .frame::after { right: 8px; bottom: 8px; border-right: 2px solid; border-bottom: 2px solid; }
+
+    .lantern {
+      position: fixed;
+      top: -6px;
+      width: 80px;
+      z-index: 3;
+      transform-origin: 50% 0;
+      animation: sway 4.8s ease-in-out infinite alternate;
+      filter: drop-shadow(0 12px 22px rgba(250, 89, 42, .28));
+    }
+
+    .lantern.left { left: 7vw; }
+    .lantern.right { right: 7vw; animation-delay: -2.1s; }
+    .cord { width: 1px; height: 62px; margin: auto; background: var(--gold-soft); }
+    .cap { width: 44px; height: 7px; margin: auto; border-radius: 5px; background: linear-gradient(90deg,#8b5b18,var(--gold),#8b5b18); }
+    .body {
+      width: 72px;
+      height: 88px;
+      margin: 3px auto;
+      border: 1px solid #f2a452;
+      border-radius: 42% 42% 36% 36%;
+      background: repeating-linear-gradient(90deg,#aa121b 0 9px,#db3330 9px 13px);
+      box-shadow: inset 0 0 24px #ff9f45, 0 0 26px rgba(255,119,47,.24);
+      display: grid;
+      place-items: center;
+      color: #ffe4a0;
+      font: 700 28px "STKaiti", "KaiTi", serif;
+    }
+    .tassel { width: 2px; height: 34px; margin: auto; background: #e4ae4f; box-shadow: -7px 5px #e4ae4f, 7px 5px #e4ae4f; }
+
+    main {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 90px 24px 54px;
+    }
+
+    .hero {
+      width: min(920px, 100%);
+      text-align: center;
+      animation: reveal 1.1s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: .42em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after { content: ""; width: 50px; height: 1px; background: linear-gradient(90deg,transparent,var(--gold)); }
+    .eyebrow::after { transform: rotate(180deg); }
+
+    .seal {
+      width: 78px;
+      height: 78px;
+      margin: 28px auto 18px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--gold);
+      outline: 1px solid rgba(247,213,138,.5);
+      outline-offset: 5px;
+      transform: rotate(45deg);
+      background: rgba(88, 3, 8, .58);
+      box-shadow: 0 0 40px rgba(247,213,138,.12);
+    }
+
+    .seal span {
+      transform: rotate(-45deg);
+      color: var(--gold);
+      font: 700 34px "STKaiti", "KaiTi", serif;
+    }
+
+    h1 {
+      margin: 24px 0 12px;
+      font-family: "STKaiti", "KaiTi", serif;
+      font-size: clamp(58px, 10vw, 112px);
+      font-weight: 700;
+      line-height: .96;
+      letter-spacing: .12em;
+      color: transparent;
+      background: linear-gradient(180deg,#fff3c7 4%,#efc66c 45%,#b8751f 92%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,.36));
+    }
+
+    .subtitle {
+      margin: 24px auto 0;
+      max-width: 680px;
+      color: rgba(255,246,222,.84);
+      font-family: "STKaiti", "KaiTi", serif;
+      font-size: clamp(19px, 2.6vw, 27px);
+      letter-spacing: .15em;
+      line-height: 1.8;
+    }
+
+    .blessings {
+      margin: 44px auto 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .blessing {
+      padding: 10px 18px;
+      border: 1px solid rgba(247,213,138,.32);
+      border-radius: 999px;
+      background: rgba(64,3,7,.34);
+      color: #f8dfaa;
+      font-size: 14px;
+      letter-spacing: .15em;
+      backdrop-filter: blur(8px);
+      transition: transform .25s, border-color .25s, background .25s;
+    }
+
+    .blessing:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold);
+      background: rgba(141,16,24,.55);
+    }
+
+    .card {
+      width: min(650px, 100%);
+      margin: 42px auto 0;
+      padding: 23px 28px;
+      border-top: 1px solid rgba(247,213,138,.32);
+      border-bottom: 1px solid rgba(247,213,138,.32);
+      color: rgba(255,246,222,.72);
+      line-height: 1.9;
+      font-size: 15px;
+      letter-spacing: .06em;
+    }
+
+    .signature {
+      margin-top: 28px;
+      color: var(--gold);
+      font-family: "STKaiti", "KaiTi", serif;
+      font-size: 18px;
+      letter-spacing: .2em;
+    }
+
+    .hint {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      z-index: 4;
+      color: rgba(255,235,191,.55);
+      font-size: 12px;
+      letter-spacing: .12em;
+      white-space: nowrap;
+    }
+
+    @keyframes sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+    @keyframes reveal { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 620px) {
+      .frame { inset: 9px; }
+      .lantern { transform: scale(.72); top: -16px; }
+      .lantern.left { left: 1vw; }
+      .lantern.right { right: 1vw; }
+      main { padding-top: 110px; }
+      h1 { letter-spacing: .04em; }
+      .card { padding-inline: 12px; }
+      .hint { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks" aria-hidden="true"></canvas>
+  <div class="grain"></div>
+  <div class="pattern"></div>
+  <div class="frame"></div>
+
+  <div class="lantern left" aria-hidden="true">
+    <div class="cord"></div><div class="cap"></div><div class="body">春</div><div class="cap"></div><div class="tassel"></div>
+  </div>
+  <div class="lantern right" aria-hidden="true">
+    <div class="cord"></div><div class="cap"></div><div class="body">福</div><div class="cap"></div><div class="tassel"></div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="seal"><span>福</span></div>
+      <h1>新春纳福</h1>
+      <p class="subtitle">愿新岁胜旧岁，欢愉且胜意；<br>所求皆如愿，所行皆坦途。</p>
+
+      <div class="blessings" aria-label="新春祝福">
+        <span class="blessing">岁岁安澜</span>
+        <span class="blessing">家和业兴</span>
+        <span class="blessing">万事胜意</span>
+        <span class="blessing">福启新程</span>
+      </div>
+
+      <div class="card">
+        一盏灯火，照见团圆；一声祝愿，递来春意。<br>
+        愿你与珍爱之人共享岁月温柔，在崭新的年轮里，遇见更多美好。
+      </div>
+      <div class="signature">谨贺 · 新春</div>
+    </section>
+  </main>
+
+  <div class="hint">点击任意位置 · 绽放新春烟火</div>
+
+  <script>
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    let dpr = Math.min(devicePixelRatio || 1, 2);
+
+    function resize() {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = innerWidth * dpr;
+      canvas.height = innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function burst(x, y, amount = 52) {
+      const palette = ['#f7d58a', '#ffb746', '#ff6954', '#fff1bb'];
+      for (let i = 0; i < amount; i++) {
+        const angle = Math.PI * 2 * i / amount + Math.random() * .09;
+        const speed = 1.2 + Math.random() * 3.2;
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          decay: .010 + Math.random() * .013,
+          color: palette[Math.floor(Math.random() * palette.length)],
+          size: 1 + Math.random() * 1.8
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.vy += .025;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= .992;
+        p.life -= p.decay;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+
+    addEventListener('resize', resize);
+    addEventListener('pointerdown', event => burst(event.clientX, event.clientY, 64));
+    resize();
+    draw();
+    setTimeout(() => burst(innerWidth * .28, innerHeight * .28), 500);
+    setTimeout(() => burst(innerWidth * .74, innerHeight * .24), 1100);
+    // 持续绽放烟花；限制粒子总量，兼顾手机端流畅度。
+    setInterval(() => {
+      if (!document.hidden && particles.length < 280) {
+        const amount = innerWidth < 620 ? 30 : 44;
+        burst(
+          innerWidth * (.12 + Math.random() * .76),
+          innerHeight * (.10 + Math.random() * .42),
+          amount
+        );
+      }
+    }, 850);
+  </script>
+</body>
+</html>
