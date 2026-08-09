@@ -358,11 +358,17 @@
     draw();
     setTimeout(() => burst(innerWidth * .28, innerHeight * .28), 500);
     setTimeout(() => burst(innerWidth * .74, innerHeight * .24), 1100);
+    // 持续绽放烟花；限制粒子总量，兼顾手机端流畅度。
     setInterval(() => {
-      if (!document.hidden && particles.length < 100) {
-        burst(innerWidth * (.2 + Math.random() * .6), innerHeight * (.14 + Math.random() * .28), 38);
+      if (!document.hidden && particles.length < 280) {
+        const amount = innerWidth < 620 ? 30 : 44;
+        burst(
+          innerWidth * (.12 + Math.random() * .76),
+          innerHeight * (.10 + Math.random() * .42),
+          amount
+        );
       }
-    }, 3000);
+    }, 850);
   </script>
 </body>
 </html>
